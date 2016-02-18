@@ -136,15 +136,15 @@ You can now start the cluster. I'll just be using the default settings here, but
 you can use flags to customise various aspects of it.
 
 ```
-$ gcloud container clusters create myapp
+$ gcloud container clusters create helloapp
 ```
 
 After a few moments, your cluster will be created! You should see something like
 this:
 
 ```
-NAME   ZONE            MASTER_VERSION  MASTER_IP       MACHINE_TYPE   NODE_VERSION  NUM_NODES  STATUS
-myapp  europe-west1-b  1.1.7           10.10.10.10     n1-standard-1  1.1.7         3          RUNNING
+NAME      ZONE            MASTER_VERSION  MASTER_IP       MACHINE_TYPE   NODE_VERSION  NUM_NODES  STATUS
+helloapp  europe-west1-b  1.1.7           10.10.10.10     n1-standard-1  1.1.7         3          RUNNING
 ```
 
 Now we're ready to start deploying our application.
@@ -327,6 +327,104 @@ Hello from Go!
 ```
 
 #### Replication Controllers
+
+A replication controller is responsible for keeping a defined amount of pods
+running at any given time. You may have your replication controller create 4
+pods for example. If one goes down, the controller will be sure to start another
+one. If for some reason a 5th one appears, it will kill one to bring it back
+down to 4. It's a pretty straight-forward concept, and better yet we can make
+use of our pod files we made earlier to create our first replication
+controller.
+
+`hello-rc.json`
+```
+{
+	"apiVersion": "v1",
+	"kind": "ReplicationController",
+	"metadata": {
+		"name": "hello-rc",
+		"labels": {
+			"name": "hello-rc"
+		}
+	},
+	"spec": {
+		"replicas": 3,
+		"selector": {
+			"name": "hello"
+		},
+		"template": {
+			"metadata": {
+				"name": "hello",
+				"labels": {
+					"name": "hello"
+				}
+			},
+			"spec": {
+				"containers": [
+					{
+						"name": "hello",
+						"image": "DOCKERHUB_USERNAME/hello:latest",
+						"ports": [
+							{
+								"name": "http",
+								"containerPort": 3000,
+								"protocol": "TCP"
+							}
+						]
+					}
+				]
+			}
+		}
+	}
+}
+```
+
+So if you look beyond `template`, you'll see the same Pod that we created
+earlier on. If the replication controller is going to start and maintain a
+number of pods, it needs a template to know what our pods will look like.
+
+Above `template`, you'll see things specific to the controller itself. Notably,
+the `replicas` key which defines how many of the pods specified below should
+be running. It also uses a selector, which is again linked with the metadata
+provided inside the pod. So this replication controller is going to look for
+anything with `name` as `hello`. Above that you'll also notice keys which so
+fer we've specified in each of our other files too.
+
+So at this point we can kill the pod we created earlier on:
+
+```
+$ kubectl delete pods hello
+```
+
+and then create our replication controller:
+
+```
+$ kubectl create -f hello-rc.json
+```
+
+After that has started, you should be able to see 3 of our `hello` pods running:
+
+```
+$ kubectl get pods
+```
+
+The `hello-service` should also still be running, serving incoming request to
+each of your newly created pods. We can see the replication controller in action
+if we manually try to delete a pod:
+
+```
+$ kubectl delete pods POD_ID
+```
+
+and then quickly run:
+
+```
+$ kubectl get pods
+```
+
+To see what is going on under the hood.
+
+#### Persistent Storage
 
 Coming soon...
 
