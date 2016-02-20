@@ -434,6 +434,10 @@ If you have any questions, feel free to open an issue. Contributions are more
 than welcome, especially if you think there is something that can be explained
 more clearly or see any mistakes.
 
+### License
+
+This project uses the MIT license.
+
 [1]: https://cloud.google.com/container-engine/docs/
 [2]: https://cloud.google.com/sdk/gcloud/
 [3]: http://kubernetes.io/gettingstarted/
