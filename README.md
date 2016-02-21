@@ -424,6 +424,47 @@ $ kubectl get pods
 
 To see what is going on under the hood.
 
+##### Scaling
+
+So with our replication controller handling our pods and our service balancing
+the load, we can now think about scaling. As of now, we haven't specified any
+limits for the pods, I will come to that shortly. So let's create a scenario:
+
+You deploy your application. You write a blog post about it and send out a few
+tweets. The traffic is on the rise. Your app is beginning to struggle with the
+load. We need to create more pods to even the load out on the cluster. We're
+going to do this with just one simple command and change from having 3 pods to
+5 pods:
+
+```
+$ kubectl scale --replicas=5 -f hello-rc.json
+```
+
+You should now be able to run:
+
+```
+$ kubectl get pods
+```
+
+to see the two newly created ones:
+
+```
+$ kubectl get pods
+NAME             READY     STATUS    RESTARTS   AGE
+hello-zndh4s     1/1       Running   0          21m
+hello-j8sdgd     1/1       Running   0          21m
+hello-8sjn4h     1/1       Running   0          21m
+hello-ka98ah     1/1       Running   0          1m
+hello-qjwh37     1/1       Running   0          1m
+```
+
+This works both ways. Eventually the traffic might subside, and you can then
+bring it back down to 3 pods.
+
+```
+$ kubectl scale --replicas=3 -f hello-rc.json
+```
+
 #### Persistent Storage
 
 Coming soon...
@@ -444,3 +485,4 @@ This project uses the MIT license.
 [4]: http://golang.org
 [5]: https://console.cloud.google.com/project
 [6]: https://cloud.google.com/compute/docs/zones#available
+
