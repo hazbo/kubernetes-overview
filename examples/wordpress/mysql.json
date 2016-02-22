@@ -1,0 +1,50 @@
+{
+	"apiVersion": "v1",
+	"kind": "Pod",
+	"metadata": {
+		"name": "mysql",
+		"labels": {
+			"name": "mysql"
+		}
+	},
+	"spec": {
+		"containers": [
+			{
+				"name": "mysql",
+				"image": "mysql:5.6",
+				"env": [
+					{
+						"name": "MYSQL_ROOT_PASSWORD",
+						"value": "password"
+					},
+					{
+						"name": "MYSQL_DATABASE",
+						"value": "wordpress"
+					}
+				],
+				"ports": [
+					{
+						"name": "mysql",
+						"protocol": "TCP",
+						"containerPort": 3306
+					}
+				],
+				"volumeMounts": [
+					{
+						"name": "mysql-storage",
+						"mountPath": "/var/lib/mysql"
+					}
+				]
+			}
+		],
+		"volumes": [
+			{
+				"name": "mysql-storage",
+				"gcePersistentDisk": {
+					"pdName": "mysql-disk",
+					"fsType": "ext4"
+				}
+			}
+		]
+	}
+}
