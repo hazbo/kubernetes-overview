@@ -1,23 +1,23 @@
 {
-	"apiVersion": "v1",
-	"kind": "Service",
-	"metadata": {
-		"name": "wordpress-service",
-		"labels": {
-			"name": "wordpress-service"
-		}
-	},
-	"spec": {
-		"type": "LoadBalancer",
-		"selector": {
-			"name": "wordpress"
-		},
-		"ports": [
-			{
-				"protocol": "TCP",
-				"port": 80,
-				"targetPort": 80
-			}
-		]
-	}
+  "apiVersion": "v1",
+  "kind": "Service",
+  "metadata": {
+    "name": "wordpress-service",
+    "labels": {
+      "name": "wordpress-service"
+    }
+  },
+  "spec": {
+    "type": "LoadBalancer",
+    "selector": {
+      "name": "wordpress"
+    },
+    "ports": [
+      {
+        "protocol": "TCP",
+        "port": 80,
+        "targetPort": 80
+      }
+    ]
+  }
 }
