@@ -294,7 +294,7 @@ hello-service   10.143.241.227                 80/TCP    name=hello   44s
 kubernetes      10.143.240.1     <none>        443/TCP   <none>       8m
 ```
 
-If may take a few moments, but once the service is up and running, you should be
+It may take a few moments, but once the service is up and running, you should be
 able to visit the external IP address and see the application up and running.
 You can find out what that is by running the following:
 
