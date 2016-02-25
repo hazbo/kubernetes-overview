@@ -467,7 +467,27 @@ $ kubectl scale --replicas=3 -f hello-rc.json
 
 #### Persistent Storage
 
-Coming soon...
+Something you're application may need is storage. You may be dealing with file
+uploads, or a database. Although containers should be seen as being fairly
+disposable, your storage / data should remain. GCE makes this really easy for us
+as all we need to do is to create a disk, and then tell our containers where
+that disk is.
+
+So let's make a disk first of all:
+
+```
+$ gcloud compute disks create my-disk
+```
+
+By default, this will create a 500GB disk. You can change this among various
+other settings by passing flags to that command.
+
+Within the scope of `containers` in either your Pod or ReplicationController
+file, you can add another section called `volumeMounts`. Here, you are able to
+specify where inside your container you'd like to mount.
+
+With our Go application, we'll be extending it to store data using a MySQL
+backend. Coming soon...
 
 ### Questions and contributions
 
