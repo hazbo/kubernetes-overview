@@ -153,11 +153,11 @@ Now we're ready to start deploying our application.
 
 This is where things might start to seem a little daunting if you're new to
 Kubernetes. But once you get used to it, it's really not that bad. Kubernetes
-has this concept of Pods. Pods are basically a collection of 1 or more
-containers, it's that simple. Within a Pod you can allocate resources and limits
+has this concept of pods. Pods are basically a collection of 1 or more
+containers, it's that simple. Within a pod you can allocate resources and limits
 to what the containers have access to.
 
-Kubernetes makes it easy for us to create multiple Pods of the same application
+Kubernetes makes it easy for us to create multiple pods of the same application
 and sit them behind a load balancer. We can also tell Kubernetes that at anytime
 we'd like 3 instances of our app to be running. Or 4, or 5. It doesn't really
 matter too much at this point. What does matter though, is that Kubernetes will
@@ -165,7 +165,7 @@ make sure that how ever many you specify to be running at one time, it will
 stick to that, by means of creating new pods if one were to go down, or to bring
 a pod down if at anytime there are too many running. I'll get onto that shortly.
 
-First though, let's create a single Pod. We'll do this by use of a JSON
+First though, let's create a single pod. We'll do this by use of a JSON
 document. You may also use YAML if you prefer that.
 
 `hello-pod.json`
@@ -203,19 +203,19 @@ at the top here. In this example this is simply just `v1`. We need to tell
 Kubernetes what it is we'd like to create, in this case it's a `Pod`, which is
 the value to `kind`.
 
-As you can see there is also a metadata section, where we can name this Pod,
+As you can see there is also a metadata section, where we can name this pod,
 and provide it some key / value pairs under labels. Labels, as you'll come to
 see are pretty important, as we can select resources to be ran by using them,
 as opposed to just a name.
 
 And finally the `spec`, which is where we list our containers to be ran in this
-Pod. We're only going to be using the one. This will be pulled from the Docker
+pod. We're only going to be using the one. This will be pulled from the Docker
 registry that we pushed to earlier on.
 
 We then specify the ports, and if you remember from earlier our Go application
 runs on port 3000, so we'll use that here also.
 
-Let's now create this Pod:
+Let's now create this pod:
 
 ```
 $ kubectl create -f hello-pod.json
@@ -272,7 +272,7 @@ So let's create the service:
 
 You can see here that we're using the `selector` key to find anything using the
 specified metadata key / value pairs. In this case, something with the `name`,
-`hello`. The target port of this Pod is 3000, as specified in the Pod file, but
+`hello`. The target port of this pod is 3000, as specified in the pod file, but
 we would like to run that on port 80, so it's more accessible. With this kind of
 service, the `type` needs to be specified as `LoadBalancer`. This allows it to
 be publically accessible to the outside world via IP address.
@@ -379,7 +379,7 @@ controller.
 }
 ```
 
-So if you look beyond `template`, you'll see the same Pod that we created
+So if you look beyond `template`, you'll see the same pod that we created
 earlier on. If the replication controller is going to start and maintain a
 number of pods, it needs a template to know what our pods will look like.
 
@@ -482,7 +482,7 @@ $ gcloud compute disks create my-disk
 By default, this will create a 500GB disk. You can change this among various
 other settings by passing flags to that command.
 
-Within the scope of `containers` in either your Pod or ReplicationController
+Within the scope of `containers` in either your pod or ReplicationController
 file, you can add another section called `volumeMounts`. Here, you are able to
 specify where inside your container you'd like to mount.
 
