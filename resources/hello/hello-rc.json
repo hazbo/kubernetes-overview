@@ -1,39 +1,39 @@
 {
-    "apiVersion": "v1",
-    "kind": "ReplicationController",
-    "metadata": {
-        "name": "hello-rc",
-        "labels": {
-            "name": "hello-rc"
-        }
-    },
-    "spec": {
-        "replicas": 3,
-        "selector": {
-            "name": "hello"
-        },
-        "template": {
-            "metadata": {
-                "name": "hello",
-                "labels": {
-                    "name": "hello"
-                }
-            },
-            "spec": {
-                "containers": [
-                    {
-                        "name": "hello",
-                        "image": "DOCKERHUB_USERNAME/hello:latest",
-                        "ports": [
-                            {
-                                "name": "http",
-                                "containerPort": 3000,
-                                "protocol": "TCP"
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
+  "apiVersion": "v1",
+  "kind": "ReplicationController",
+  "metadata": {
+    "name": "hello-rc",
+    "labels": {
+      "name": "hello-rc"
     }
+  },
+  "spec": {
+    "replicas": 3,
+    "selector": {
+      "name": "hello"
+    },
+    "template": {
+      "metadata": {
+        "name": "hello",
+        "labels": {
+          "name": "hello"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "name": "hello",
+            "image": "DOCKERHUB_USERNAME/hello:latest",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 3000,
+                "protocol": "TCP"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
 }
