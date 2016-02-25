@@ -5,7 +5,7 @@ At first it seemed pretty daunting to me, but after a while I started getting
 used to it and realised how powerful it is. This document is just me explaining
 it in my own words as I'm using it. It is a work in progress.
 
-#### So what is it?
+### So what is it?
 In short, Kubernetes is a set of tools and programs that give you higher level
 control of your cluster and everything running on it. Once Kubernetes is all set
 up on your cluster you can start pods, services, and have your containers all
@@ -13,7 +13,7 @@ running in harmony. You can find out more about it, along with Google Container
 Engine [here][1].
 
 
-#### Up and running quickly
+### Up and running quickly
 A great way to get up and running quickly with Kubernetes is to get set up with
 Google Container Engine, which allows you to start up a cluster with everything
 working from the get go. You can manage aspects of this using the [gcloud][2]
@@ -29,7 +29,7 @@ For this tutorial I will be using the following:
   - gcloud cli application /w kubectl
   - Google Container Engine / Kubernetes
 
-#### The application
+### The application
 
 First, we need an application that we'd like to run on our cluster. We could
 use one that already exists, but for this introduction I'm going to create one
@@ -106,7 +106,7 @@ $ curl localhost:3000
 Hello from Go!
 ```
 
-#### Starting the cluster
+### Starting the cluster
 
 Now we have our container image pushed to the Docker hub, we can get a start on
 creating the cluster.
@@ -149,7 +149,7 @@ helloapp  europe-west1-b  1.1.7           10.10.10.10     n1-standard-1  1.1.7  
 
 Now we're ready to start deploying our application.
 
-#### Pods
+### Pods
 
 This is where things might start to seem a little daunting if you're new to
 Kubernetes. But once you get used to it, it's really not that bad. Kubernetes
@@ -232,7 +232,7 @@ hello     1/1       Running   0          1m
 
 So now that is up and running, we can move on to services.
 
-#### Services
+### Services
 
 So what is a service and why do we need them? As far as Kubernetes is concerned,
 a service is basically a named load balancer. In essence this means that we
@@ -326,7 +326,7 @@ $ curl 104.155.115.84
 Hello from Go!
 ```
 
-#### Replication Controllers
+### Replication Controllers
 
 A replication controller is responsible for keeping a defined amount of pods
 running at any given time. You may have your replication controller create 4
@@ -424,7 +424,7 @@ $ kubectl get pods
 
 To see what is going on under the hood.
 
-##### Scaling
+### Scaling
 
 So with our replication controller handling our pods and our service balancing
 the load, we can now think about scaling. As of now, we haven't specified any
@@ -465,7 +465,7 @@ bring it back down to 3 pods.
 $ kubectl scale --replicas=3 -f hello-rc.json
 ```
 
-#### Persistent Storage
+### Persistent Storage
 
 Something your application may need is storage. You may be dealing with file
 uploads, or a database. Although containers should be seen as being fairly
