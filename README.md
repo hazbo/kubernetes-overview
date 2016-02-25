@@ -37,7 +37,7 @@ using the [Go programming language][4].
 
 
 `hello.go`
-```
+```go
 package main
 
 import (
@@ -169,7 +169,7 @@ First though, let's create a single Pod. We'll do this by use of a JSON
 document. You may also use YAML if you prefer that.
 
 `hello-pod.json`
-```
+```json
 {
 	"apiVersion": "v1",
 	"kind": "Pod",
@@ -244,7 +244,7 @@ service.
 So let's create the service:
 
 `hello-service.json`
-```
+```json
 {
 	"apiVersion": "v1",
 	"kind": "Service",
@@ -337,7 +337,7 @@ use of our pod files we made earlier to create our first replication
 controller.
 
 `hello-rc.json`
-```
+```json
 {
 	"apiVersion": "v1",
 	"kind": "ReplicationController",
