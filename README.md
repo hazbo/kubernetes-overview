@@ -467,7 +467,7 @@ $ kubectl scale --replicas=3 -f hello-rc.json
 
 #### Persistent Storage
 
-Something you're application may need is storage. You may be dealing with file
+Something your application may need is storage. You may be dealing with file
 uploads, or a database. Although containers should be seen as being fairly
 disposable, your storage / data should remain. GCE makes this really easy for us
 as all we need to do is to create a disk, and then tell our containers where
