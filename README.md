@@ -1,9 +1,14 @@
 # An overview of Kubernetes
 
 Recently I have been playing around with Kubernetes on Google Container Engine.
-At first it seemed pretty daunting to me, but after a while I started getting
-used to it and realised how powerful it is. This document is just me explaining
-it in my own words as I'm using it. It is a work in progress.
+At first it seemed pretty daunting to me and from what I've heard from a few
+other people it has been the same for them. But once you start getting used to
+how Kubernetes works and how you're supposed to use it, you realise how powerful
+it can be and how it can make your deployments seem almost effortless. The goal
+of this document is to go through Kubernetes step by step in such a way whereby
+the only prerequisite for you is that you understand what containers are and
+ideally, how Docker works. This is just Kubernetes in my own words. I hope you
+find it helpful. (WIP)
 
 ### So what is it?
 In short, Kubernetes is a set of tools and programs that give you higher level
