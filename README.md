@@ -127,8 +127,8 @@ should have a default project listed. You can access that [here][5].
 
 NOTE: If you've not done this yet and feel uneasy about paying for something you
 might never use, Google (at least as of writing this) offer 60 days and $300
-worth of resources to use with Google Cloud Platform when you initially sign up
-- no strings attached. This is a total steal, just [go here][7] then click on
+worth of resources to use with Google Cloud Platform when you initially sign up,
+no strings attached. This is a total steal, just [go here][7] then click on
 Free Trial.
 
 Get the ID of the project and configure like so:
