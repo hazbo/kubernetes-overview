@@ -92,7 +92,7 @@ CMD ["/hello"]
 We can then build this and push it to the Docker registry:
 
 ```
-$ docker build -t hello .
+$ docker build -t DOCKERHUB_USERNAME/hello .
 $ docker images
 $ docker tag IMAGE_ID DOCKERHUB_USERNAME/hello:latest
 $ docker push DOCKERHUB_USERNAME/hello
