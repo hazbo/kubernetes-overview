@@ -478,6 +478,14 @@ $ kubectl scale --replicas=3 -f hello-rc.json
 
 ### Persistent Storage
 
+NOTE: To go through this next part, you may want to delete all the pods and
+services currently running, first:
+
+```
+$ kubectl delete services hello-service
+$ kubectl delete rc hello-rc
+```
+
 Something your application may need is storage. You may be dealing with file
 uploads, or a database. Although containers should be seen as being fairly
 disposable, your storage / data should remain. GCE makes this really easy for us
@@ -487,7 +495,7 @@ that disk is.
 So let's make a disk first of all:
 
 ```
-$ gcloud compute disks create my-disk
+$ gcloud compute disks create mysql-disk
 ```
 
 By default, this will create a 500GB disk. You can change this among various
@@ -497,8 +505,370 @@ Within the scope of `containers` in either your pod or ReplicationController
 file, you can add another section called `volumeMounts`. Here, you are able to
 specify where inside your container you'd like to mount.
 
-With our Go application, we'll be extending it to store data using a MySQL
-backend. Coming soon...
+I've created a new application called todo.go. It is based off our original
+hello.go application, only it actually does something this time:
+
+`todo.go`
+```go
+package main
+
+import (
+	"database/sql"
+	"fmt"
+	"html/template"
+	"log"
+	"net/http"
+
+	_ "github.com/go-sql-driver/mysql"
+)
+
+const dbHost = "mysql-service:3306"
+const dbUser = "root"
+const dbPassword = "password"
+const dbName = "todo"
+
+func main() {
+	http.HandleFunc("/", todoList)
+	http.HandleFunc("/save", saveItem)
+	log.Fatal(http.ListenAndServe(":3000", nil))
+}
+
+// Todo represents a single 'todo', or item.
+type Todo struct {
+	ID   int
+	Item string
+}
+
+// todoList shows the todo list along with the form to add a new item to the
+// list.
+func todoList(w http.ResponseWriter, r *http.Request) {
+	tmpl := `
+<html>
+	<head>
+		<title>List of items</title>
+	</head>
+	<body>
+		<h1>Todo list:</h1>
+		<form action="/save" method="post">
+			Add item: <input type="text" name="item" /><br />
+			<input type="submit" value="Add" /><br /><hr />
+		</form>
+		<ul>
+		{{range $key, $value := .TodoItems}}
+			<li>{{ $value.Item }}</li>
+		{{end}}
+		</ul>
+	</body>
+</html>
+`
+	t, err := template.New("todolist").Parse(tmpl)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	dbc := db()
+	rows, err := dbc.Query("SELECT * FROM items")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	todos := []Todo{}
+	for rows.Next() {
+		todo := Todo{}
+		err = rows.Scan(&todo.ID, &todo.Item)
+		todos = append(todos, todo)
+	}
+
+	data := struct {
+		TodoItems []Todo
+	}{
+		TodoItems: todos,
+	}
+
+	t.Execute(w, data)
+}
+
+// saveItem saves a new todo item and then redirects the user back to the list
+func saveItem(w http.ResponseWriter, r *http.Request) {
+	dbc := db()
+	stmt, err := dbc.Prepare("INSERT items SET item=?")
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = stmt.Exec(r.FormValue("item"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	http.Redirect(w, r, "/", 301)
+}
+
+// db creates a connection to the database and creates the items table if it
+// does not already exist.
+func db() *sql.DB {
+	connStr := fmt.Sprintf(
+		"%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
+		dbUser,
+		dbPassword,
+		dbHost,
+		dbName,
+	)
+	db, err := sql.Open("mysql", connStr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS items(
+		id integer NOT NULL AUTO_INCREMENT,
+		item varchar(255),
+		PRIMARY KEY (id)
+	)`)
+	return db
+}
+
+```
+
+Now we can go through similar steps from earlier to create our binary and Docker
+container image. This one will be called `todo`.
+
+```
+$ go get -u github.com/go-sql-driver/mysql
+$ CGO_ENABLED=0 GOOS=linux go build -o todo -a -tags netgo -ldflags '-w' .
+```
+
+`Dockerfile`
+```
+FROM scratch
+ADD todo /
+CMD ["/todo"]
+```
+
+```
+$ docker build -t DOCKERHUB_USERNAME/todo:latest .
+$ docker push DOCKERHUB_USERNAME/todo
+```
+
+That is our container image pushed to the Docker Hub. Now onto defining our
+replication controller and services. Seeing as we'll be using MySQL this time,
+we'll be creating a seperate disk using the gcloud cli tool. This is what we'll
+use when configuring the `volumes` for our containers.
+
+```
+$ gcloud compute disks create mysql-disk
+```
+
+`mysql-disk` is going to be the name of it. This is important as it is used
+to reference the disk in our JSON files. Once that is done, we can go ahead and
+create the MySQL pod.
+
+`mysql.json`
+```json
+{
+  "apiVersion": "v1",
+  "kind": "Pod",
+  "metadata": {
+    "name": "mysql",
+    "labels": {
+      "name": "mysql"
+    }
+  },
+  "spec": {
+    "containers": [
+      {
+        "name": "mysql",
+        "image": "mysql:5.6",
+        "env": [
+          {
+            "name": "MYSQL_ROOT_PASSWORD",
+            "value": "password"
+          },
+          {
+            "name": "MYSQL_DATABASE",
+            "value": "todo"
+          }
+        ],
+        "ports": [
+          {
+            "name": "mysql",
+            "protocol": "TCP",
+            "containerPort": 3306
+          }
+        ],
+        "volumeMounts": [
+          {
+            "name": "mysql-storage",
+            "mountPath": "/var/lib/mysql"
+          }
+        ]
+      }
+    ],
+    "volumes": [
+      {
+        "name": "mysql-storage",
+        "gcePersistentDisk": {
+          "pdName": "mysql-disk",
+          "fsType": "ext4"
+        }
+      }
+    ]
+  }
+}
+
+```
+
+As you can see in this file, we specify a few more things than in our original
+hello pod. We'll be using the official `mysql:5.6` container image from Docker
+Hub. Environment variables are set to configure various aspects of how this pod
+will run. You can find documentation for these at the Docker Hub on the MySQL
+page.
+
+We'll just be setting the basics, `MYSQL_ROOT_PASSWORD` and `MYSQL_DATABASE`.
+This will give us access to our `todo` database as the `root` user. The next new
+thing here are the `volumeMounts` and `volumes` keys. We give each volume mount
+a name and path. The name is what is then used by the `volumes` as a reference
+to it. The mount path is just where on the container you'll mount to.
+
+Outside of the scope of our containers, we can specify where our volume mounts
+will be. In this case, we'll be using the newly created `mysql-disk` from
+earlier, and defining the file system type to `ext4`. Now we can start the pod:
+
+```
+$ kubectl create -f mysql.json
+```
+
+Next, we'll create a service for this pod. Like earlier, our service is going to
+be acting as a load balancer. We'll say what port we'd like to listen on, along
+with the target port of the running container:
+
+`mysql-service.json`
+```
+{
+  "apiVersion": "v1",
+  "kind": "Service",
+  "metadata": {
+    "name": "mysql-service",
+    "labels": {
+      "name": "mysql"
+    }
+  },
+  "spec": {
+    "selector": {
+      "name": "mysql"
+    },
+    "ports": [
+      {
+        "protocol": "TCP",
+        "port": 3306,
+        "targetPort": 3306
+      }
+    ]
+  }
+}
+```
+
+We can now start this:
+
+```
+$ kubectl create -f mysql-service.json
+```
+
+Take note of the `name` key in this file. Google Container Engine comes with
+a DNS service already running, which means pods are able to access each other
+using the value to `name` as the host. If you noticed in our Go program, we
+specify the host as `mysql-service:3306`. This can also be done with environment
+variables. I'll go into detail with that another time.
+
+With MySQL running, we should be able to start our todo application now. For
+this example I'll be using a replication controller rather than just a single
+pod definition:
+
+`todo-rc.json`
+```json
+{
+  "apiVersion": "v1",
+  "kind": "ReplicationController",
+  "metadata": {
+    "name": "todo-rc",
+    "labels": {
+      "name": "todo-rc"
+    }
+  },
+  "spec": {
+    "replicas": 3,
+    "selector": {
+      "name": "todo"
+    },
+    "template": {
+      "metadata": {
+        "name": "todo",
+        "labels": {
+          "name": "todo"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "name": "todo",
+            "image": "DOCKERHUB_USERNAME/todo:latest",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 3000,
+                "protocol": "TCP"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+You'll notice this file is very similar to our hello app replication controller.
+We can start this now:
+
+```
+$ kubectl create -f todo-rc.json
+```
+
+And the service, with `"type": "LoadBalancer"` to expose a public IP:
+
+`todo-service.json`
+```json
+{
+  "apiVersion": "v1",
+  "kind": "Service",
+  "metadata": {
+    "name": "todo-service",
+    "labels": {
+      "name": "todo-service"
+    }
+  },
+  "spec": {
+    "type": "LoadBalancer",
+    "ports": [
+      {
+        "name": "http",
+        "port": 80,
+        "targetPort": 3000
+      }
+    ],
+    "selector": {
+      "name": "todo"
+    }
+  }
+}
+```
+
+The same as always:
+
+```
+$ kubectl create -f todo-service.json
+```
+
+Once the service has finished creating the load balancer, you can head over to
+the public IP to see your application running.
+
+More coming soon...
 
 ### Questions and contributions
 

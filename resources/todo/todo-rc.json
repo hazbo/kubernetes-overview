@@ -1,0 +1,39 @@
+{
+  "apiVersion": "v1",
+  "kind": "ReplicationController",
+  "metadata": {
+    "name": "todo-rc",
+    "labels": {
+      "name": "todo-rc"
+    }
+  },
+  "spec": {
+    "replicas": 3,
+    "selector": {
+      "name": "todo"
+    },
+    "template": {
+      "metadata": {
+        "name": "todo",
+        "labels": {
+          "name": "todo"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "name": "todo",
+            "image": "DOCKERHUB_USERNAME/todo:latest",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 3000,
+                "protocol": "TCP"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
