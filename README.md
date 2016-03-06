@@ -180,31 +180,30 @@ document. You may also use YAML if you prefer that.
 `hello-pod.json`
 ```json
 {
-	"apiVersion": "v1",
-	"kind": "Pod",
-	"metadata": {
-		"name": "hello",
-		"labels": {
-			"name": "hello"
-		}
-	},
-	"spec": {
-		"containers": [
-			{
-				"name": "hello",
-				"image": "DOCKERHUB_USERNAME/hello:latest",
-				"ports": [
-					{
-						"name": "http",
-						"containerPort": 3000,
-						"protocol": "TCP"
-					}
-				]
-			}
-		]
-	}
+  "apiVersion": "v1",
+  "kind": "Pod",
+  "metadata": {
+    "name": "hello",
+    "labels": {
+      "name": "hello"
+    }
+  },
+  "spec": {
+    "containers": [
+      {
+        "name": "hello",
+        "image": "DOCKERHUB_USERNAME/hello:latest",
+        "ports": [
+          {
+            "name": "http",
+            "containerPort": 3000,
+            "protocol": "TCP"
+          }
+        ]
+      }
+    ]
+  }
 }
-
 ```
 
 Let's go over this a little. So we're specifying the API version we'll be using
@@ -255,27 +254,27 @@ So let's create the service:
 `hello-service.json`
 ```json
 {
-	"apiVersion": "v1",
-	"kind": "Service",
-	"metadata": {
-		"name": "hello-service",
-		"labels": {
-			"name": "hello-service"
-		}
-	},
-	"spec": {
-		"type": "LoadBalancer",
-		"ports": [
-			{
-				"name": "http",
-				"port": 80,
-				"targetPort": 3000
-			}
-		],
-		"selector": {
-			"name": "hello"
-		}
-	}
+  "apiVersion": "v1",
+  "kind": "Service",
+  "metadata": {
+    "name": "hello-service",
+    "labels": {
+      "name": "hello-service"
+    }
+  },
+  "spec": {
+    "type": "LoadBalancer",
+    "ports": [
+      {
+        "name": "http",
+        "port": 80,
+        "targetPort": 3000
+      }
+    ],
+    "selector": {
+      "name": "hello"
+    }
+  }
 }
 ```
 
@@ -348,43 +347,43 @@ controller.
 `hello-rc.json`
 ```json
 {
-	"apiVersion": "v1",
-	"kind": "ReplicationController",
-	"metadata": {
-		"name": "hello-rc",
-		"labels": {
-			"name": "hello-rc"
-		}
-	},
-	"spec": {
-		"replicas": 3,
-		"selector": {
-			"name": "hello"
-		},
-		"template": {
-			"metadata": {
-				"name": "hello",
-				"labels": {
-					"name": "hello"
-				}
-			},
-			"spec": {
-				"containers": [
-					{
-						"name": "hello",
-						"image": "DOCKERHUB_USERNAME/hello:latest",
-						"ports": [
-							{
-								"name": "http",
-								"containerPort": 3000,
-								"protocol": "TCP"
-							}
-						]
-					}
-				]
-			}
-		}
-	}
+  "apiVersion": "v1",
+  "kind": "ReplicationController",
+  "metadata": {
+    "name": "hello-rc",
+    "labels": {
+      "name": "hello-rc"
+    }
+  },
+  "spec": {
+    "replicas": 3,
+    "selector": {
+      "name": "hello"
+    },
+    "template": {
+      "metadata": {
+        "name": "hello",
+        "labels": {
+          "name": "hello"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "name": "hello",
+            "image": "DOCKERHUB_USERNAME/hello:latest",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 3000,
+                "protocol": "TCP"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
 }
 ```
 
@@ -737,7 +736,7 @@ be acting as a load balancer. We'll say what port we'd like to listen on, along
 with the target port of the running container:
 
 `mysql-service.json`
-```
+```json
 {
   "apiVersion": "v1",
   "kind": "Service",
