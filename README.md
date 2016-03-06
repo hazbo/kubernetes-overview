@@ -40,8 +40,7 @@ First, we need an application that we'd like to run on our cluster. We could
 use one that already exists, but for this introduction I'm going to create one
 using the [Go programming language][4].
 
-
-`hello.go`
+[`hello.go`][8]
 ```go
 package main
 
@@ -177,7 +176,7 @@ a pod down if at anytime there are too many running. I'll get onto that shortly.
 First though, let's create a single pod. We'll do this by use of a JSON
 document. You may also use YAML if you prefer that.
 
-`hello-pod.json`
+[`hello-pod.json`][9]
 ```json
 {
   "apiVersion": "v1",
@@ -251,7 +250,7 @@ service.
 
 So let's create the service:
 
-`hello-service.json`
+[`hello-service.json`][10]
 ```json
 {
   "apiVersion": "v1",
@@ -344,7 +343,7 @@ down to 4. It's a pretty straight-forward concept, and better yet we can make
 use of our pod files we made earlier to create our first replication
 controller.
 
-`hello-rc.json`
+[`hello-rc.json`][11]
 ```json
 {
   "apiVersion": "v1",
@@ -505,7 +504,7 @@ specify where inside your container you'd like to mount.
 I've created a new application called todo.go. It is based off our original
 hello.go application, only it actually does something this time:
 
-`todo.go`
+[`todo.go`][12]
 ```go
 package main
 
@@ -656,7 +655,7 @@ $ gcloud compute disks create mysql-disk
 to reference the disk in our JSON files. Once that is done, we can go ahead and
 create the MySQL pod.
 
-`mysql.json`
+[`mysql.json`][13]
 ```json
 {
   "apiVersion": "v1",
@@ -735,7 +734,7 @@ Next, we'll create a service for this pod. Like earlier, our service is going to
 be acting as a load balancer. We'll say what port we'd like to listen on, along
 with the target port of the running container:
 
-`mysql-service.json`
+[`mysql-service.json`][14]
 ```json
 {
   "apiVersion": "v1",
@@ -777,7 +776,7 @@ With MySQL running, we should be able to start our todo application now. For
 this example I'll be using a replication controller rather than just a single
 pod definition:
 
-`todo-rc.json`
+[`todo-rc.json`][15]
 ```json
 {
   "apiVersion": "v1",
@@ -829,7 +828,7 @@ $ kubectl create -f todo-rc.json
 
 And the service, with `"type": "LoadBalancer"` to expose a public IP:
 
-`todo-service.json`
+[`todo-service.json`][16]
 ```json
 {
   "apiVersion": "v1",
@@ -884,4 +883,12 @@ This project uses the MIT license.
 [5]: https://console.cloud.google.com/project
 [6]: https://cloud.google.com/compute/docs/zones#available
 [7]: https://cloud.google.com/
-
+[8]: https://raw.githubusercontent.com/hazbo/kubernetes-overview/master/src/hello/hello.go
+[9]: https://raw.githubusercontent.com/hazbo/kubernetes-overview/master/resources/hello/hello-pod.json
+[10]: https://raw.githubusercontent.com/hazbo/kubernetes-overview/master/resources/hello/hello-service.json
+[11]: https://raw.githubusercontent.com/hazbo/kubernetes-overview/master/resources/hello/hello-rc.json
+[12]: https://raw.githubusercontent.com/hazbo/kubernetes-overview/master/src/todo/todo.go
+[13]: https://raw.githubusercontent.com/hazbo/kubernetes-overview/master/resources/todo/mysql.json
+[14]: https://raw.githubusercontent.com/hazbo/kubernetes-overview/master/resources/todo/mysql-service.json
+[15]: https://raw.githubusercontent.com/hazbo/kubernetes-overview/master/resources/todo/todo-rc.json
+[16]: https://raw.githubusercontent.com/hazbo/kubernetes-overview/master/resources/todo/todo-service.json
