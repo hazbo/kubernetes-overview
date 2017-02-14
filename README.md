@@ -1,5 +1,15 @@
 # An overview of Kubernetes
 
+Notice: This hasn't been updated in some time, and while most of it still
+remains relevant, there are certainly things in here I'd like to update to keep
+on track with the Kubernetes project. This is due to a) me being a bit lazy, and
+b) most importantly, the amazing contributors who hack away on Kubernetes. There
+is so much love for that project and we're seeing new versions and features
+being shipped frequently. I hope this keeps up. And I also hope to keep up with
+it at some point in regards to this project. Contributions are still and always
+welcome. If you're a Kubernetes contributor and you're reading this, thank you
+for everything.
+
 Recently I have been playing around with Kubernetes on Google Container Engine.
 At first it seemed pretty daunting to me and from what I've heard from a few
 other people it has been the same for them. But once you start getting used to
